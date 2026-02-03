@@ -1,7 +1,10 @@
 *This is not a complete documentation! While it does cover Quanta's existing features, it is missing what I have planned for the language!*
+*See also: [Change log](https://github.com/aadenboy/Quanta/blob/main/changelog.md)*
 
 ![Quanta logo](https://github.com/aadenboy/Quanta/blob/main/QuantaLogoFull.png?raw=true)
-Quanta is a data serialization language inspired by [JSON](https://en.wikipedia.org/wiki/JSON) and [YAML](https://en.wikipedia.org/wiki/YAML) with the intent of being easy to read and write while also being expressive enough to handle a multitude of data structures and domains.
+Quanta is a human-first data serialization language inspired by [JSON](https://en.wikipedia.org/wiki/JSON) and [YAML](https://en.wikipedia.org/wiki/YAML) with the intent of being easy to read and write while also being expressive enough to handle a multitude of data structures and domains.
+
+Sections marked with a warning symbol (⚠) cover features which may be more complex compared to what you need, and can be safely ignored for most use cases.
 
 ## Etymology
 The name "Quanta" comes from [quantum mechanics](https://en.wikipedia.org/wiki/Quantum_mechanics), which is often attributed to atoms. The objects in Quanta are seen as the nuclei of atoms, and their properties are their electrons, with all the atoms bonding together to create a molecule. The name is also partially to prevent the language's name from being an acronym, unlike many of the commonly used data formats.
@@ -68,7 +71,7 @@ You can create a list simply by separating each value within the list with a spa
   {list2} 1, 2, 3 -- do NOT use commas
 ```
 
-In the case that more granularity is needed, you can index a specific position in the list with a hashtag.
+⚠ In the case that more granularity is needed, you can index a specific position in the list with a hashtag.
 ```
 [object]
   {list} 1 2 3 -- object.list = [1, 2, 3]
@@ -79,6 +82,7 @@ In the case that more granularity is needed, you can index a specific position i
   {list#1} 1     -- since list is empty, Quanta creates an empty list for you
   {list#2} 1 2 3 -- you can nest lists inside lists this way; object.list = [1, [1, 2, 3]]
 ```
+To maintain readability, you should only use this syntax to insert deeper levels. You should also consider a directory format instead (see below).
 
 ### Directories
 Directories are created in a similar manner by separating each level with a colon.
@@ -98,6 +102,7 @@ For cleaner code, an alternate syntax is available. Ending an attribute with a c
       {:sub} 5 -- {dir:baz:sub} 5
     {::higher} 6 -- {dir:higher}
 ```
+To maintain readability, try to minimize the amount of upward traversals (`::`) you use.
 
 ## Types
 There are eight types available in a Quanta file: words, strings, numbers, booleans, none, colors, aliases, and flags.
@@ -154,23 +159,8 @@ Several escape codes are provided. Additionally, any character can be escaped wi
 | `\xXX` | ASCII character corresponding to `XX`, which are two hexadecimal numbers |
 | `\cC` | Escape character corresponding to the code of `C` modulo 32, i.e `\cJ` is equivalent to `\n` (72 mod 32 = 10) |
 
-#### Automatic aliasing
-Strings are automatically given numeric [aliases](#Aliases) when defined. This functionality exists for legacy purposes, however may have use for compaction.
-
-```
-[aliases]
-  {one} ::Example string:: -- $1; now refers to this string
-  {two} ::Another::        -- $2;
-  {three} ::And a third::  -- $3;
-  
-[usage]
-  {one} $1; -- same as {one} ::Example string::
-  {many} $2; $3;
-  {again} $1; $2; $3;
-```
-
 #### Block comments
-You can create a block comment by containing the newline inside of a string.
+You can create a block comment by containing the newlines inside of a string.
 ```
 [example]
   {attr} data   -- this is a really long comment ::
@@ -183,13 +173,7 @@ You can create a block comment by containing the newline inside of a string.
                     so long as you close it afterwards
                 ::
 ```
-
-Note that this does parse the string inside the comment, and any strings inside comments will define new aliases.
-```
-[aliasing]
-  {example} 1 -- this is a ::string:: inside of a comment
-  {reuse} $1; -- $1; refers to ^^ this string
-```
+For readability, try to stick to one style and not treat them like strings.
 
 ## Numbers
 Numbers can be naturally defined in multiple ways. All forms of integers and floats are supported.
@@ -209,36 +193,27 @@ Quanta also supplies several bases.
 | Hexadecimal | `0x` | `0123456789abcdef` |
 | Binary | `0b` | `01` |
 | Trinary | `0t` | `012` |
-| [Seximal](https://www.seximal.net/) | `0s` | `012345` |
 | Octal | `0o` | `012345678` |
-| Dozenal | `0d` | `0123456789ab` |
-| Tally marks | `0i` | `1` |
 
 ```
 [base]
   {hex} 0xff 0x9a
   {bin} 0b11111110 0b10011010
   {tri} 0t11111110 0t12201
-  {six} 0s1102 0s414
   {oct} 0o376 0o232
-  {doz} 0d192 0d10a
-  {tally} 0i11111111111111 -- this base is purely a joke
 ```
 
-Floats in other bases are also supported. Tally marks implement floats by turning the count after the point into a fraction, so `1111...n` = 1/n.
+Floats in other bases are also supported.
 
 ```
 [floats]
   {hex} 0x1e.5b
   {bin} 0b11110.01011011
   {tri} 0t1010.10012101020020000022
-  {six} 0s50.20444043
   {oct} 0o36.266
-  {doz} 0d26.4323
-  {tally} 0i111111111111111111111111111111.11 -- closest approximation is 30 1/3
 ```
 
-## Booleans and none
+## Booleans and `none`
 The booleans `true`, `false`, and `none` are the only reserved keywords used by Quanta. The latter equals null or nil in common programming languages.
 
 ```
@@ -250,26 +225,7 @@ The booleans `true`, `false`, and `none` are the only reserved keywords used by 
   {flags#4} mode4 -- set flags[4]
 ```
 
-## Colors
-Colors are syntactic sugar—they allow the user to define the color value without directly encoding it. It is up to the program to determine how it should parse it. Colors are written in hashed hexadecimal form, and support all four common forms.
-
-```
-[premise]
-  {color} #10f400 -- there are multiple possible representations of this
-  {representations:}
-    {:string} ::#10f400::
-    {:number} 1111040
-    {:array} 16 244 0
-    -- and more...
-
-[colors]
-  {primary} #f00 #0f0 #00f
-  {secondary} #ff0 #f0f #0ff
-  {full width} #ff0000
-  {transparent} #0f04 #00ff0044
-```
-
-## Aliases
+## ⚠ Aliases
 Aliases are the first special type. They can be defined in the data or by the program, and function like variables in common programming languages. To define an alias, use the `@alias` flag, followed by the name, then value. The same traversal rules apply here. Note that lists and objects defined as an alias should point to the same list/object every time it is used. To refer to an alias, supply the name of the alias between a dollar sign and colon.
 
 ```
@@ -301,8 +257,22 @@ Aliases are the first special type. They can be defined in the data or by the pr
 ## Flags
 Flags are the second special type. While they don't correspond to an actual value, they are used to tell the parser what to do. In addition to this, a program can define their own flags. Currently, Quanta only has two built-in flags:
 
-### `<container>` and `<end>`
-The `<container>` flag defines a container which holds more objects in a list. It should be placed into a value, and followed by a word to use as the syntax marker for an entry to the container. Objects which are added to the list should be preceded by the word. A container is closed by marking the next entry with the `<end>` flag instead.
+### ⚠ `<holds>`
+The `<holds>` flag defines the value of the attribute to correspond to the next defined object. Inserting the `<end>` flag at the end of any attribute will immediately return the scope to the parent object.
+
+```
+[object]
+  {basedata} 1 2 3
+  {morebase} true false
+  {child} <holds>
+    [child]
+      {data} lorem ipsum dolor sit amet
+      {moredata} 1 2 3 4 5
+      <end>
+```
+
+### ⚠ `<container>`
+The `<container>` flag defines a container which holds more objects in a list. It should be placed into a value, and followed by a word to use as the syntax marker for an entry to the container. Objects which are added to the list should be preceded by the word. A container is closed by marking the next entry with the `<end>` flag instead, immediately returning the scope to the object which holds the container.
 
 ```
 [object]
@@ -316,10 +286,10 @@ The `<container>` flag defines a container which holds more objects in a list. I
   {extradata} 5 6 7
 ```
 
-Quanta allows for multiple containers to be open at the same time, and will append each object to whichever container uses the appropriate prefix. Do note that containers will <em>never</em> close themselves, even if you switch back to a lower container or define an object without the entry marker.
+Quanta allows for multiple containers to be open at the same time, and will append each object to whichever container uses the appropriate prefix. Note that containers will not automatically close, as Quanta is unable to infer when this happens without the marker.
 
 ## Example
-For an actual example, take the data used by the file [[:File:MoverExample.gif]]:
+For an actual example, take the data used by the file [File:Mover.gif](https://cellua.miraheze.org/wiki/File:Mover.gif) on the CelLua Machine Wiki:
 
 ```
 [board]
@@ -341,5 +311,5 @@ The first line `[board]` defines a board object. In the case of the GIF, this es
 
 After that is `[animation]`, which defines the `animation` section of the entry. `{mode}` and `{cellposition}` use words to define their values rather than another value. For their purpose, they're short, meaningful values that the program can easily parse, much like an enum.
 
-At the final part, `{ticks}` and `{camera}` each contain a long list of values (note the variable spacing). In the case of `{ticks}`, it's a neat list of a number-word pattern. For `{camera}`, the pattern isn't as clear, as you may notice the inclusion of two words `-1+2i` and `7-2i` at the end (since they aren't real numbers). This is fine, and in the case of the program, it will parse these correctly.
+At the final part, `{ticks}` and `{camera}` each contain a long list of values (note the variable spacing). In the case of `{ticks}`, it's a neat list of a number-word pattern. For `{camera}`, the pattern isn't as clear, as you may notice the inclusion of two words `-1+2i` and `7-2i` at the end (since they aren't real numbers). The consumer program will parse these independently of Quanta.
 
