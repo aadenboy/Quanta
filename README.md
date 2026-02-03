@@ -1,6 +1,6 @@
 *This is not a complete documentation! While it does cover Quanta's existing features, it is missing what I have planned for the language!*
 
-# Quanta
+![Quanta logo](https://github.com/aadenboy/Quanta/blob/main/QuantaLogoFull.png?raw=true)
 Quanta is a data serialization language inspired by [JSON](https://en.wikipedia.org/wiki/JSON) and [YAML](https://en.wikipedia.org/wiki/YAML) with the intent of being easy to read and write while also being expressive enough to handle a multitude of data structures and domains.
 
 ## Etymology
