@@ -2,7 +2,7 @@
 *See also: [Change log](https://github.com/aadenboy/Quanta/blob/main/changelog.md)*
 
 ![Quanta logo](https://github.com/aadenboy/Quanta/blob/main/QuantaLogoFull.png?raw=true)
-Quanta is a human-first data serialization language inspired by [JSON](https://en.wikipedia.org/wiki/JSON) and [YAML](https://en.wikipedia.org/wiki/YAML) with the intent of being easy to read and write while also being expressive enough to handle a multitude of data structures and domains.
+Quanta is a human-first data representation language inspired by [JSON](https://en.wikipedia.org/wiki/JSON) and [YAML](https://en.wikipedia.org/wiki/YAML) with the intent of being easy to read and write while also being expressive enough to handle a multitude of data structures and domains.
 
 Sections marked with a warning symbol (⚠) cover features which may be more complex compared to what you need, and can be safely ignored for most use cases.
 
