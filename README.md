@@ -105,7 +105,7 @@ For cleaner code, an alternate syntax is available. Ending an attribute with a c
 To maintain readability, try to minimize the amount of upward traversals (`::`) you use.
 
 ## Types
-There are eight types available in a Quanta file: words, strings, numbers, booleans, none, colors, aliases, and flags.
+There are seven types available in a Quanta file: words, strings, numbers, booleans, none, aliases, and flags.
 
 ### Words
 Words are the most basic type, acting identically to a non-quoted string. These are the default—if a sequence of characters cannot correspond to another data type, it is a word.
@@ -160,12 +160,12 @@ Several escape codes are provided. Additionally, any character can be escaped wi
 | `\cC` | Escape character corresponding to the code of `C` modulo 32, i.e `\cJ` is equivalent to `\n` (72 mod 32 = 10) |
 
 #### Block comments
-You can create a block comment by containing the newlines inside of a string.
+You can create a block comment with the same syntax as strings. All that is necessary is that all newlines that are contained within a string.
 ```
 [example]
   {attr} data   -- this is a really long comment ::
                 :: which explains this attribute ::
-                :: see how I use strings here?   :: <-- string start
+                :: see how I use colons here?    :: <-- string start
  string end --> :: they contain the ending newline
   {attr2} data
   {attr3} new   --::
@@ -173,7 +173,7 @@ You can create a block comment by containing the newlines inside of a string.
                     so long as you close it afterwards
                 ::
 ```
-For readability, try to stick to one style and not treat them like strings.
+For readability, try to stick to one style.
 
 ## Numbers
 Numbers can be naturally defined in multiple ways. All forms of integers and floats are supported.
